@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<title>Inscription</title>
+</head>
+<body>
+	<h1>Inscription</h1>
+
+	{{if .Error}}
+		<p style="color:red;">{{.Error}}</p>
+	{{end}}
+
+	<form method="POST" action="/register">
+		<label>Nom d'utilisateur<br>
+			<input type="text" name="username" required>
+		</label><br><br>
+		<label>Email<br>
+			<input type="email" name="email" required>
+		</label><br><br>
+		<label>Mot de passe<br>
+			<input type="password" name="password" required>
+		</label><br><br>
+		<button type="submit">S'inscrire</button>
+	</form>
+
+	<p><a href="/login">Déjà un compte ? Se connecter</a></p>
+</body>
+</html>

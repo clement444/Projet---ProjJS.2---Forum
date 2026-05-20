@@ -6,16 +6,22 @@ import (
 	"net/http"
 
 	"forum/database"
+	"forum/handlers"
 )
 
 func main() {
 	db := database.Init("forum.db")
 	defer db.Close()
 
-	_ = db
-
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "hello")
+	})
+	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			handlers.RegisterPost(db)(w, r)
+		} else {
+			handlers.RegisterGet(w, r)
+		}
 	})
 
 	log.Println("Server started on http://localhost:8080")
