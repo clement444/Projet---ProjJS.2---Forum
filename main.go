@@ -30,6 +30,7 @@ func main() {
 			handlers.LoginGet(w, r)
 		}
 	})
+	http.HandleFunc("/logout", handlers.Logout(db))
 
 	log.Println("Server started on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

@@ -98,3 +98,22 @@ func LoginPost(db *sql.DB) http.HandlerFunc {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }
+
+func Logout(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		cookie, err := r.Cookie("session_token")
+		if err == nil {
+			db.Exec("DELETE FROM sessions WHERE token = ?", cookie.Value)
+		}
+
+		http.SetCookie(w, &http.Cookie{
+			Name:     "session_token",
+			Value:    "",
+			Expires:  time.Unix(0, 0),
+			HttpOnly: true,
+			Path:     "/",
+		})
+
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+	}
+}
