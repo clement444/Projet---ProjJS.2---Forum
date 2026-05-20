@@ -4,9 +4,16 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"forum/database"
 )
 
 func main() {
+	db := database.Init("forum.db")
+	defer db.Close()
+
+	_ = db
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "hello")
 	})
