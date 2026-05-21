@@ -83,4 +83,9 @@ func createTables(db *sql.DB) {
 			log.Fatal(err)
 		}
 	}
+
+	categories := []string{"Général", "Technologie", "Sport", "Jeux vidéo", "Musique", "Cinéma"}
+	for _, name := range categories {
+		db.Exec("INSERT OR IGNORE INTO categories (name) VALUES (?)", name)
+	}
 }

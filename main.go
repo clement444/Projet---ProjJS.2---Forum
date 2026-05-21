@@ -28,6 +28,13 @@ func main() {
 		}
 	})
 	http.HandleFunc("/logout", handlers.Logout(db))
+	http.HandleFunc("/post/create", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			handlers.CreatePostPost(db)(w, r)
+		} else {
+			handlers.CreatePostGet(db)(w, r)
+		}
+	})
 
 	log.Println("Server started on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
