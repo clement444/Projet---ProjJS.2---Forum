@@ -11,6 +11,23 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func GetSessionUser(db *sql.DB, r *http.Request) (int, string) {
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		return 0, ""
+	}
+	var userID int
+	var username string
+	err = db.QueryRow(
+		"SELECT u.id, u.username FROM users u JOIN sessions s ON u.id = s.user_id WHERE s.token = ? AND s.expires_at > CURRENT_TIMESTAMP",
+		cookie.Value,
+	).Scan(&userID, &username)
+	if err != nil {
+		return 0, ""
+	}
+	return userID, username
+}
+
 func RegisterGet(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("templates/register.html"))
 	tmpl.Execute(w, nil)

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<title>Forum</title>
+</head>
+<body>
+	<header>
+		<h1>Forum</h1>
+		<nav>
+			{{if .Username}}
+				<span>Connecté en tant que <strong>{{.Username}}</strong></span>
+				&nbsp;|&nbsp;
+				<a href="/post/create">Nouveau post</a>
+				&nbsp;|&nbsp;
+				<a href="/logout">Se déconnecter</a>
+			{{else}}
+				<a href="/login">Se connecter</a>
+				&nbsp;|&nbsp;
+				<a href="/register">S'inscrire</a>
+			{{end}}
+		</nav>
+	</header>
+
+	<hr>
+
+	{{if .Posts}}
+		<ul>
+			{{range .Posts}}
+				<li>
+					<a href="/post/{{.ID}}">{{.Title}}</a>
+					— par <strong>{{.Username}}</strong>
+					<small>({{.CreatedAt}})</small>
+				</li>
+			{{end}}
+		</ul>
+	{{else}}
+		<p>Aucun post pour l'instant.</p>
+	{{end}}
+</body>
+</html>
