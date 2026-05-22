@@ -21,7 +21,7 @@
 		<p style="color:red;">{{.Error}}</p>
 	{{end}}
 
-	<form method="POST" action="/post/create">
+	<form method="POST" action="/post/create" enctype="multipart/form-data">
 		<label>Titre<br>
 			<input type="text" name="title" required>
 		</label><br><br>
@@ -39,6 +39,10 @@
 				</label><br>
 			{{end}}
 		</fieldset><br>
+
+		<label>Image (optionnelle)<br>
+			<input type="file" name="image" accept="image/*">
+		</label><br><br>
 
 		<button type="submit">Publier</button>
 		<a href="/">Annuler</a>

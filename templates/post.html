@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<title>{{.Post.Title}}</title>
+</head>
+<body>
+	<header>
+		<a href="/">Accueil</a>
+		&nbsp;|&nbsp;
+		{{if .Username}}
+			<span>Connecté en tant que <strong>{{.Username}}</strong></span>
+			&nbsp;|&nbsp;
+			<a href="/logout">Se déconnecter</a>
+		{{else}}
+			<a href="/login">Se connecter</a>
+			&nbsp;|&nbsp;
+			<a href="/register">S'inscrire</a>
+		{{end}}
+	</header>
+
+	<hr>
+
+	<h1>{{.Post.Title}}</h1>
+	<p>Par <strong>{{.Post.Username}}</strong> — <small>{{.Post.CreatedAt}}</small></p>
+
+	{{if .Post.Categories}}
+		<p>
+			{{range .Post.Categories}}
+				<span>[{{.}}]</span>
+			{{end}}
+		</p>
+	{{end}}
+
+	{{if .Post.ImagePath}}
+		<img src="/{{.Post.ImagePath}}" alt="image du post" style="max-width:600px;"><br><br>
+	{{end}}
+
+	<p>{{.Post.Content}}</p>
+
+	<hr>
+
+	<h2>Commentaires ({{len .Comments}})</h2>
+
+	{{if .Comments}}
+		{{range .Comments}}
+			<div>
+				<strong>{{.Username}}</strong> — <small>{{.CreatedAt}}</small>
+				<p>{{.Content}}</p>
+			</div>
+			<hr>
+		{{end}}
+	{{else}}
+		<p>Aucun commentaire pour l'instant.</p>
+	{{end}}
+</body>
+</html>

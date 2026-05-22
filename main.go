@@ -12,6 +12,7 @@ func main() {
 	db := database.Init("forum.db")
 	defer db.Close()
 
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/", handlers.Home(db))
 	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
@@ -28,6 +29,7 @@ func main() {
 		}
 	})
 	http.HandleFunc("/logout", handlers.Logout(db))
+	http.HandleFunc("/post/", handlers.PostDetail(db))
 	http.HandleFunc("/post/create", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
 			handlers.CreatePostPost(db)(w, r)
