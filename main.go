@@ -40,6 +40,7 @@ func main() {
 	})
 	http.HandleFunc("/comment/delete", handlers.DeleteComment(db))
 	http.HandleFunc("/comment/edit", handlers.EditComment(db))
+	http.HandleFunc("/like", handlers.Like(db))
 	http.HandleFunc("/post/", handlers.PostDetail(db))
 	http.HandleFunc("/post/create", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {

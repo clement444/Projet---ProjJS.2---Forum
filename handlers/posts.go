@@ -34,6 +34,8 @@ type PostFull struct {
 	ImagePath  string
 	CreatedAt  string
 	Categories []string
+	Likes      int
+	Dislikes   int
 }
 
 type EditPostData struct {
@@ -50,6 +52,8 @@ type Comment struct {
 	Username  string
 	UserID    int
 	CreatedAt string
+	Likes     int
+	Dislikes  int
 }
 
 type PostDetailData struct {
@@ -225,6 +229,8 @@ func PostDetail(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
+		db.QueryRow(`SELECT COALESCE(SUM(CASE WHEN value=1 THEN 1 ELSE 0 END),0), COALESCE(SUM(CASE WHEN value=-1 THEN 1 ELSE 0 END),0) FROM likes WHERE post_id = ?`, id).Scan(&p.Likes, &p.Dislikes)
+
 		catRows, _ := db.Query(`
 			SELECT c.name FROM categories c
 			JOIN post_categories pc ON c.id = pc.category_id
@@ -248,6 +254,7 @@ func PostDetail(db *sql.DB) http.HandlerFunc {
 		for commentRows.Next() {
 			var c Comment
 			commentRows.Scan(&c.ID, &c.Content, &c.Username, &c.UserID, &c.CreatedAt)
+			db.QueryRow(`SELECT COALESCE(SUM(CASE WHEN value=1 THEN 1 ELSE 0 END),0), COALESCE(SUM(CASE WHEN value=-1 THEN 1 ELSE 0 END),0) FROM likes WHERE comment_id = ?`, c.ID).Scan(&c.Likes, &c.Dislikes)
 			comments = append(comments, c)
 		}
 
