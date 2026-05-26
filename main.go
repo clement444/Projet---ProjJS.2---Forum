@@ -29,6 +29,9 @@ func main() {
 		}
 	})
 	http.HandleFunc("/logout", handlers.Logout(db))
+	http.HandleFunc("/comment/create", handlers.CreateComment(db))
+	http.HandleFunc("/post/delete", handlers.DeletePost(db))
+	http.HandleFunc("/comment/delete", handlers.DeleteComment(db))
 	http.HandleFunc("/post/", handlers.PostDetail(db))
 	http.HandleFunc("/post/create", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {

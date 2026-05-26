@@ -252,3 +252,34 @@ func PostDetail(db *sql.DB) http.HandlerFunc {
 		})
 	}
 }
+
+func DeletePost(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.NotFound(w, r)
+			return
+		}
+
+		userID, username := GetSessionUser(db, r)
+		if username == "" {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+
+		postID := r.FormValue("post_id")
+
+		var ownerID int
+		err := db.QueryRow("SELECT user_id FROM posts WHERE id = ?", postID).Scan(&ownerID)
+		if err != nil || ownerID != userID {
+			http.Error(w, "Interdit", http.StatusForbidden)
+			return
+		}
+
+		db.Exec("DELETE FROM post_categories WHERE post_id = ?", postID)
+		db.Exec("DELETE FROM likes WHERE post_id = ?", postID)
+		db.Exec("DELETE FROM comments WHERE post_id = ?", postID)
+		db.Exec("DELETE FROM posts WHERE id = ?", postID)
+
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+}
