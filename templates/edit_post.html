@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<title>Modifier le post</title>
+</head>
+<body>
+	<header>
+		<a href="/">Accueil</a>
+		&nbsp;|&nbsp;
+		<span>Connecté en tant que <strong>{{.Username}}</strong></span>
+		&nbsp;|&nbsp;
+		<a href="/logout">Se déconnecter</a>
+	</header>
+
+	<hr>
+
+	<h1>Modifier le post</h1>
+
+	{{if .Error}}
+		<p style="color:red;">{{.Error}}</p>
+	{{end}}
+
+	<form method="POST" action="/post/edit">
+		<input type="hidden" name="post_id" value="{{.Post.ID}}">
+
+		<label>Titre<br>
+			<input type="text" name="title" value="{{.Post.Title}}" required>
+		</label><br><br>
+
+		<label>Contenu<br>
+			<textarea name="content" rows="6" cols="50" required>{{.Post.Content}}</textarea>
+		</label><br><br>
+
+		<fieldset>
+			<legend>Catégories (au moins une)</legend>
+			{{range .Categories}}
+				<label>
+					<input type="checkbox" name="categories" value="{{.ID}}"
+						{{if index $.Selected .ID}}checked{{end}}>
+					{{.Name}}
+				</label><br>
+			{{end}}
+		</fieldset><br>
+
+		<button type="submit">Enregistrer</button>
+		<a href="/post/{{.Post.ID}}">Annuler</a>
+	</form>
+</body>
+</html>

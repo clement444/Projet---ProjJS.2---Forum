@@ -31,7 +31,15 @@ func main() {
 	http.HandleFunc("/logout", handlers.Logout(db))
 	http.HandleFunc("/comment/create", handlers.CreateComment(db))
 	http.HandleFunc("/post/delete", handlers.DeletePost(db))
+	http.HandleFunc("/post/edit", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			handlers.EditPostPost(db)(w, r)
+		} else {
+			handlers.EditPostGet(db)(w, r)
+		}
+	})
 	http.HandleFunc("/comment/delete", handlers.DeleteComment(db))
+	http.HandleFunc("/comment/edit", handlers.EditComment(db))
 	http.HandleFunc("/post/", handlers.PostDetail(db))
 	http.HandleFunc("/post/create", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {

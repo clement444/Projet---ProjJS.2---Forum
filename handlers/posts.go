@@ -36,6 +36,14 @@ type PostFull struct {
 	Categories []string
 }
 
+type EditPostData struct {
+	Post       PostFull
+	Categories []Category
+	Selected   map[int]bool
+	Username   string
+	Error      string
+}
+
 type Comment struct {
 	ID        int
 	Content   string
@@ -281,5 +289,87 @@ func DeletePost(db *sql.DB) http.HandlerFunc {
 		db.Exec("DELETE FROM posts WHERE id = ?", postID)
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+}
+
+func EditPostGet(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		userID, username := GetSessionUser(db, r)
+		if username == "" {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+
+		id, err := strconv.Atoi(r.URL.Query().Get("id"))
+		if err != nil || id <= 0 {
+			http.NotFound(w, r)
+			return
+		}
+
+		var p PostFull
+		err = db.QueryRow(`
+			SELECT p.id, p.title, p.content, u.username, u.id, COALESCE(p.image_path, ''), p.created_at
+			FROM posts p JOIN users u ON p.user_id = u.id
+			WHERE p.id = ?`, id,
+		).Scan(&p.ID, &p.Title, &p.Content, &p.Username, &p.UserID, &p.ImagePath, &p.CreatedAt)
+		if err != nil || p.UserID != userID {
+			http.Error(w, "Interdit", http.StatusForbidden)
+			return
+		}
+
+		selected := map[int]bool{}
+		rows, _ := db.Query("SELECT category_id FROM post_categories WHERE post_id = ?", id)
+		defer rows.Close()
+		for rows.Next() {
+			var cid int
+			rows.Scan(&cid)
+			selected[cid] = true
+		}
+
+		tmpl := template.Must(template.ParseFiles("templates/edit_post.html"))
+		tmpl.Execute(w, EditPostData{
+			Post:       p,
+			Categories: getCategories(db),
+			Selected:   selected,
+			Username:   username,
+		})
+	}
+}
+
+func EditPostPost(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		userID, username := GetSessionUser(db, r)
+		if username == "" {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+
+		postID := r.FormValue("post_id")
+		title := r.FormValue("title")
+		content := r.FormValue("content")
+		categoryIDs := r.Form["categories"]
+
+		var ownerID int
+		err := db.QueryRow("SELECT user_id FROM posts WHERE id = ?", postID).Scan(&ownerID)
+		if err != nil || ownerID != userID {
+			http.Error(w, "Interdit", http.StatusForbidden)
+			return
+		}
+
+		if title == "" || content == "" || len(categoryIDs) == 0 {
+			http.Redirect(w, r, "/post/edit?id="+postID, http.StatusSeeOther)
+			return
+		}
+
+		db.Exec(
+			"UPDATE posts SET title = ?, content = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+			title, content, postID,
+		)
+		db.Exec("DELETE FROM post_categories WHERE post_id = ?", postID)
+		for _, catID := range categoryIDs {
+			db.Exec("INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)", postID, catID)
+		}
+
+		http.Redirect(w, r, "/post/"+postID, http.StatusSeeOther)
 	}
 }
