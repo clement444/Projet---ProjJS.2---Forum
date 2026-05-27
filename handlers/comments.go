@@ -34,7 +34,7 @@ func CreateComment(db *sql.DB) http.HandlerFunc {
 func DeleteComment(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
-			http.NotFound(w, r)
+			NotFound(w, r)
 			return
 		}
 
@@ -50,7 +50,7 @@ func DeleteComment(db *sql.DB) http.HandlerFunc {
 		var ownerID int
 		err := db.QueryRow("SELECT user_id FROM comments WHERE id = ?", commentID).Scan(&ownerID)
 		if err != nil || ownerID != userID {
-			http.Error(w, "Interdit", http.StatusForbidden)
+			Forbidden(w, r)
 			return
 		}
 
@@ -64,7 +64,7 @@ func DeleteComment(db *sql.DB) http.HandlerFunc {
 func EditComment(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
-			http.NotFound(w, r)
+			NotFound(w, r)
 			return
 		}
 
@@ -86,7 +86,7 @@ func EditComment(db *sql.DB) http.HandlerFunc {
 		var ownerID int
 		err := db.QueryRow("SELECT user_id FROM comments WHERE id = ?", commentID).Scan(&ownerID)
 		if err != nil || ownerID != userID {
-			http.Error(w, "Interdit", http.StatusForbidden)
+			Forbidden(w, r)
 			return
 		}
 

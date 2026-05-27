@@ -74,7 +74,7 @@ type HomeData struct {
 func Home(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
-			http.NotFound(w, r)
+			NotFound(w, r)
 			return
 		}
 
@@ -118,7 +118,7 @@ func Home(db *sql.DB) http.HandlerFunc {
 		}
 
 		if err != nil {
-			http.Error(w, "Erreur serveur", http.StatusInternalServerError)
+			InternalError(w, r)
 			return
 		}
 		defer rows.Close()
@@ -225,7 +225,7 @@ func CreatePostPost(db *sql.DB) http.HandlerFunc {
 
 		imagePath, err := saveImage(r)
 		if err != nil {
-			http.Error(w, "Erreur lors de l'upload de l'image", http.StatusInternalServerError)
+			InternalError(w, r)
 			return
 		}
 
@@ -234,7 +234,7 @@ func CreatePostPost(db *sql.DB) http.HandlerFunc {
 			userID, title, content, imagePath,
 		)
 		if err != nil {
-			http.Error(w, "Erreur serveur", http.StatusInternalServerError)
+			InternalError(w, r)
 			return
 		}
 
@@ -252,7 +252,7 @@ func PostDetail(db *sql.DB) http.HandlerFunc {
 		idStr := strings.TrimPrefix(r.URL.Path, "/post/")
 		id, err := strconv.Atoi(idStr)
 		if err != nil || id <= 0 {
-			http.NotFound(w, r)
+			NotFound(w, r)
 			return
 		}
 
@@ -265,7 +265,7 @@ func PostDetail(db *sql.DB) http.HandlerFunc {
 			WHERE p.id = ?`, id,
 		).Scan(&p.ID, &p.Title, &p.Content, &p.Username, &p.UserID, &p.ImagePath, &p.CreatedAt)
 		if err != nil {
-			http.NotFound(w, r)
+			NotFound(w, r)
 			return
 		}
 
@@ -311,7 +311,7 @@ func PostDetail(db *sql.DB) http.HandlerFunc {
 func DeletePost(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
-			http.NotFound(w, r)
+			NotFound(w, r)
 			return
 		}
 
@@ -326,7 +326,7 @@ func DeletePost(db *sql.DB) http.HandlerFunc {
 		var ownerID int
 		err := db.QueryRow("SELECT user_id FROM posts WHERE id = ?", postID).Scan(&ownerID)
 		if err != nil || ownerID != userID {
-			http.Error(w, "Interdit", http.StatusForbidden)
+			Forbidden(w, r)
 			return
 		}
 
@@ -349,7 +349,7 @@ func EditPostGet(db *sql.DB) http.HandlerFunc {
 
 		id, err := strconv.Atoi(r.URL.Query().Get("id"))
 		if err != nil || id <= 0 {
-			http.NotFound(w, r)
+			NotFound(w, r)
 			return
 		}
 
@@ -360,7 +360,7 @@ func EditPostGet(db *sql.DB) http.HandlerFunc {
 			WHERE p.id = ?`, id,
 		).Scan(&p.ID, &p.Title, &p.Content, &p.Username, &p.UserID, &p.ImagePath, &p.CreatedAt)
 		if err != nil || p.UserID != userID {
-			http.Error(w, "Interdit", http.StatusForbidden)
+			Forbidden(w, r)
 			return
 		}
 
@@ -399,7 +399,7 @@ func EditPostPost(db *sql.DB) http.HandlerFunc {
 		var ownerID int
 		err := db.QueryRow("SELECT user_id FROM posts WHERE id = ?", postID).Scan(&ownerID)
 		if err != nil || ownerID != userID {
-			http.Error(w, "Interdit", http.StatusForbidden)
+			Forbidden(w, r)
 			return
 		}
 

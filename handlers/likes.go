@@ -9,7 +9,7 @@ import (
 func Like(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
-			http.NotFound(w, r)
+			NotFound(w, r)
 			return
 		}
 
