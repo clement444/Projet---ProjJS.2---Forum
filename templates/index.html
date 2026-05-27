@@ -24,6 +24,23 @@
 
 	<hr>
 
+	<aside>
+		<strong>Filtres</strong><br><br>
+		<a href="/">Tous les posts</a><br><br>
+
+		{{if .Username}}
+			<a href="/?filter=mine">Mes posts</a><br>
+			<a href="/?filter=liked">Mes likes</a><br><br>
+		{{end}}
+
+		<strong>Catégories</strong><br>
+		{{range .Categories}}
+			<a href="/?filter=category&category_id={{.ID}}">{{.Name}}</a><br>
+		{{end}}
+	</aside>
+
+	<hr>
+
 	{{if .Posts}}
 		<ul>
 			{{range .Posts}}

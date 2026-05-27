@@ -64,8 +64,11 @@ type PostDetailData struct {
 }
 
 type HomeData struct {
-	Posts    []Post
-	Username string
+	Posts      []Post
+	Username   string
+	Categories []Category
+	Filter     string
+	CategoryID string
 }
 
 func Home(db *sql.DB) http.HandlerFunc {
@@ -75,14 +78,45 @@ func Home(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		_, username := GetSessionUser(db, r)
+		userID, username := GetSessionUser(db, r)
+		filter := r.URL.Query().Get("filter")
+		categoryID := r.URL.Query().Get("category_id")
 
-		rows, err := db.Query(`
-			SELECT p.id, p.title, u.username, p.created_at
-			FROM posts p
-			JOIN users u ON p.user_id = u.id
-			ORDER BY p.created_at DESC
-		`)
+		var rows *sql.Rows
+		var err error
+
+		switch filter {
+		case "category":
+			rows, err = db.Query(`
+				SELECT p.id, p.title, u.username, p.created_at
+				FROM posts p
+				JOIN users u ON p.user_id = u.id
+				JOIN post_categories pc ON p.id = pc.post_id
+				WHERE pc.category_id = ?
+				ORDER BY p.created_at DESC`, categoryID)
+		case "mine":
+			rows, err = db.Query(`
+				SELECT p.id, p.title, u.username, p.created_at
+				FROM posts p
+				JOIN users u ON p.user_id = u.id
+				WHERE p.user_id = ?
+				ORDER BY p.created_at DESC`, userID)
+		case "liked":
+			rows, err = db.Query(`
+				SELECT p.id, p.title, u.username, p.created_at
+				FROM posts p
+				JOIN users u ON p.user_id = u.id
+				JOIN likes l ON p.id = l.post_id
+				WHERE l.user_id = ? AND l.value = 1
+				ORDER BY p.created_at DESC`, userID)
+		default:
+			rows, err = db.Query(`
+				SELECT p.id, p.title, u.username, p.created_at
+				FROM posts p
+				JOIN users u ON p.user_id = u.id
+				ORDER BY p.created_at DESC`)
+		}
+
 		if err != nil {
 			http.Error(w, "Erreur serveur", http.StatusInternalServerError)
 			return
@@ -97,7 +131,13 @@ func Home(db *sql.DB) http.HandlerFunc {
 		}
 
 		tmpl := template.Must(template.ParseFiles("templates/index.html"))
-		tmpl.Execute(w, HomeData{Posts: posts, Username: username})
+		tmpl.Execute(w, HomeData{
+			Posts:      posts,
+			Username:   username,
+			Categories: getCategories(db),
+			Filter:     filter,
+			CategoryID: categoryID,
+		})
 	}
 }
 
