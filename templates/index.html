@@ -1,58 +1,57 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-	<meta charset="UTF-8">
-	<title>Forum</title>
+    <meta charset="UTF-8">
+    <title>Forum</title>
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-	<header>
-		<h1>Forum</h1>
-		<nav>
-			{{if .Username}}
-				<span>Connecté en tant que <strong>{{.Username}}</strong></span>
-				&nbsp;|&nbsp;
-				<a href="/post/create">Nouveau post</a>
-				&nbsp;|&nbsp;
-				<a href="/logout">Se déconnecter</a>
-			{{else}}
-				<a href="/login">Se connecter</a>
-				&nbsp;|&nbsp;
-				<a href="/register">S'inscrire</a>
-			{{end}}
-		</nav>
-	</header>
+    <header>
+        <div class="nav-inner">
+            <a href="/" class="logo">Forum</a>
+            <div class="nav-links">
+                {{if .Username}}
+                    <span class="nav-user">{{.Username}}</span>
+                    <a href="/post/create">Nouveau post</a>
+                    <a href="/logout">Se déconnecter</a>
+                {{else}}
+                    <a href="/login">Se connecter</a>
+                    <a href="/register">S'inscrire</a>
+                {{end}}
+            </div>
+        </div>
+    </header>
 
-	<hr>
+    <main class="contenu">
+        <div class="filtres">
+            <a href="/" class="btn-filtre">Tous les posts</a>
+            {{if .Username}}
+                <a href="/?filter=mine" class="btn-filtre">Mes posts</a>
+                <a href="/?filter=liked" class="btn-filtre">Mes likes</a>
+            {{end}}
+            {{range .Categories}}
+                <a href="/?filter=category&category_id={{.ID}}" class="btn-filtre">{{.Name}}</a>
+            {{end}}
+        </div>
 
-	<aside>
-		<strong>Filtres</strong><br><br>
-		<a href="/">Tous les posts</a><br><br>
-
-		{{if .Username}}
-			<a href="/?filter=mine">Mes posts</a><br>
-			<a href="/?filter=liked">Mes likes</a><br><br>
-		{{end}}
-
-		<strong>Catégories</strong><br>
-		{{range .Categories}}
-			<a href="/?filter=category&category_id={{.ID}}">{{.Name}}</a><br>
-		{{end}}
-	</aside>
-
-	<hr>
-
-	{{if .Posts}}
-		<ul>
-			{{range .Posts}}
-				<li>
-					<a href="/post/{{.ID}}">{{.Title}}</a>
-					— par <strong>{{.Username}}</strong>
-					<small>({{.CreatedAt}})</small>
-				</li>
-			{{end}}
-		</ul>
-	{{else}}
-		<p>Aucun post pour l'instant.</p>
-	{{end}}
+        {{if .Posts}}
+            <ul class="liste-posts">
+                {{range .Posts}}
+                    <li>
+                        <div class="post-card">
+                            <div class="post-card-titre">
+                                <a href="/post/{{.ID}}">{{.Title}}</a>
+                            </div>
+                            <div class="post-card-meta">
+                                par <strong>{{.Username}}</strong> · {{.CreatedAt}}
+                            </div>
+                        </div>
+                    </li>
+                {{end}}
+            </ul>
+        {{else}}
+            <p class="texte-vide">Aucun post pour l'instant.</p>
+        {{end}}
+    </main>
 </body>
 </html>
