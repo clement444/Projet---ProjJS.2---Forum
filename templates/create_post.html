@@ -1,51 +1,63 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-	<meta charset="UTF-8">
-	<title>Nouveau post</title>
+    <meta charset="UTF-8">
+    <title>Nouveau post</title>
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-	<header>
-		<a href="/">Accueil</a>
-		&nbsp;|&nbsp;
-		<span>Connecté en tant que <strong>{{.Username}}</strong></span>
-		&nbsp;|&nbsp;
-		<a href="/logout">Se déconnecter</a>
-	</header>
+    <header>
+        <div class="nav-inner">
+            <a href="/" class="logo">Forum</a>
+            <div class="nav-links">
+                <span class="nav-user">{{.Username}}</span>
+                <a href="/logout">Se déconnecter</a>
+            </div>
+        </div>
+    </header>
 
-	<hr>
+    <main class="contenu">
+        <div class="form-card">
+            <h1 style="font-size:22px; font-weight:600; margin-bottom:24px;">Créer un post</h1>
 
-	<h1>Créer un post</h1>
+            {{if .Error}}
+                <div class="msg-erreur">{{.Error}}</div>
+            {{end}}
 
-	{{if .Error}}
-		<p style="color:red;">{{.Error}}</p>
-	{{end}}
+            <form method="POST" action="/post/create" enctype="multipart/form-data">
+                <div class="form-groupe">
+                    <label for="title">Titre</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
 
-	<form method="POST" action="/post/create" enctype="multipart/form-data">
-		<label>Titre<br>
-			<input type="text" name="title" required>
-		</label><br><br>
+                <div class="form-groupe">
+                    <label for="content">Contenu</label>
+                    <textarea id="content" name="content" rows="8" required></textarea>
+                </div>
 
-		<label>Contenu<br>
-			<textarea name="content" rows="6" cols="50" required></textarea>
-		</label><br><br>
+                <div class="form-groupe">
+                    <fieldset>
+                        <legend>Catégories (au moins une)</legend>
+                        {{range .Categories}}
+                            <label>
+                                <input type="checkbox" name="categories" value="{{.ID}}">
+                                {{.Name}}
+                            </label>
+                        {{end}}
+                    </fieldset>
+                </div>
 
-		<fieldset>
-			<legend>Catégories (au moins une)</legend>
-			{{range .Categories}}
-				<label>
-					<input type="checkbox" name="categories" value="{{.ID}}">
-					{{.Name}}
-				</label><br>
-			{{end}}
-		</fieldset><br>
+                <div class="form-groupe">
+                    <label for="image">Image (optionnelle)</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                </div>
 
-		<label>Image (optionnelle)<br>
-			<input type="file" name="image" accept="image/*">
-		</label><br><br>
-
-		<button type="submit">Publier</button>
-		<a href="/">Annuler</a>
-	</form>
+                <div style="display:flex; gap:12px; align-items:center;">
+                    <button type="submit" class="btn-bleu">Publier</button>
+                    <a href="/" class="btn-gris">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </main>
 </body>
 </html>

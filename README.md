@@ -26,7 +26,7 @@ docker run -p 8080:8080 forum
 
 L'application est accessible sur [http://localhost:8080](http://localhost:8080).
 
-> La base de données est stockée dans le conteneur et ne persiste pas entre les redémarrages.
+La base de données est stockée dans le conteneur et ne persiste pas entre les redémarrages.
 
 ## Fonctionnalités
 
