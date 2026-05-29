@@ -1,29 +1,39 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-	<meta charset="UTF-8">
-	<title>Inscription</title>
+    <meta charset="UTF-8">
+    <title>Inscription</title>
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-	<h1>Inscription</h1>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <h1 class="auth-titre">Inscription</h1>
 
-	{{if .Error}}
-		<p style="color:red;">{{.Error}}</p>
-	{{end}}
+            {{if .Error}}
+                <div class="msg-erreur">{{.Error}}</div>
+            {{end}}
 
-	<form method="POST" action="/register">
-		<label>Nom d'utilisateur<br>
-			<input type="text" name="username" required>
-		</label><br><br>
-		<label>Email<br>
-			<input type="email" name="email" required>
-		</label><br><br>
-		<label>Mot de passe<br>
-			<input type="password" name="password" required>
-		</label><br><br>
-		<button type="submit">S'inscrire</button>
-	</form>
+            <form method="POST" action="/register">
+                <div class="form-groupe">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-groupe">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-groupe">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn-bleu" style="width:100%;">S'inscrire</button>
+            </form>
 
-	<p><a href="/login">Déjà un compte ? Se connecter</a></p>
+            <p class="auth-footer">
+                Déjà un compte ? <a href="/login">Se connecter</a>
+            </p>
+        </div>
+    </div>
 </body>
 </html>
