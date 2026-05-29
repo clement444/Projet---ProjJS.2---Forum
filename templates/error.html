@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-	<meta charset="UTF-8">
-	<title>Erreur {{.Code}}</title>
+    <meta charset="UTF-8">
+    <title>Erreur {{.Code}}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-	<h1>Erreur {{.Code}}</h1>
-	<p>{{.Message}}</p>
-	<a href="/">Retour à l'accueil</a>
+    <div class="contenu">
+        <div class="erreur-page">
+            <div class="erreur-code">{{.Code}}</div>
+            <p class="erreur-message">{{.Message}}</p>
+            <a href="/" class="btn-gris">Retour à l'accueil</a>
+        </div>
+    </div>
 </body>
 </html>
